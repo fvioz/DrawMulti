@@ -95,20 +95,8 @@ public class DrawView extends View {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN:
 
-                int selectedColor = colors[0];
-                for(int color : colors) {
-                    for (Line currentLine : lines.values()) {
-                        if(currentLine.color == color) {
-                            continue;
-                        } else {
-                            selectedColor = color;
-                            break;
-                        }
-                    }
-                }
-
-                point = new Point(event.getX(), event.getY());
-                line = new Line(point, selectedColor);
+                point = new Point(event.getX(pointerIndex), event.getY(pointerIndex));
+                line = new Line(point, colors[pointerIndex]);
                 lines.put(pointerId, line);
                 break;
 
@@ -118,9 +106,13 @@ public class DrawView extends View {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                point = new Point(event.getX(), event.getY());
-                line = lines.get(pointerId);
-                line.add(point);
+                int pointerCount = event.getPointerCount();
+                for (int i = 0; i < pointerCount; ++i) {
+                    pointerId = event.getPointerId(i);
+                    point = new Point(event.getX(i), event.getY(i));
+                    line = lines.get(pointerId);
+                    line.add(point);
+                }
                 break;
         }
 
